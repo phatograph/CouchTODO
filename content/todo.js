@@ -35,7 +35,7 @@ function getTasks() {
   req.setRequestHeader("Content-Type", "application/json");
   req.onreadystatechange = function(e) {
     if (e.target.readyState == 4 && e.target.status == 200) {
-      displayTasks(JSON.parse(req.responseText));  // Posting an object directly does not work, we need to serialise it first by converting it to string.
+      displayTasks(JSON.parse(req.responseText));
     }
   }
   req.send(null);
@@ -53,7 +53,7 @@ function setTask(questionInfo) {
       // getTasks();
     }, 10);
   }
-  req.send(JSON.stringify(questionInfo));
+  req.send(JSON.stringify(questionInfo));  // Posting an object directly does not work, we need to serialise it first by converting it to string.
 }
 
 /*
