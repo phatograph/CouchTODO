@@ -85,16 +85,15 @@ function init() {
     e.preventDefault();
 
     if (confirm('Are you sure?')) {
-      $.ajax({
-        url: this.href,
-        type: 'POST',
-        success: function (data, textStatus, jqXHR) {
-          getTasks();
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.log('shite');
+      var req = new XMLHttpRequest();
+      req.open("POST", this.href);  // Use `href` attribute from each question that we created in `displayTasks` function.
+      req.setRequestHeader("Content-Type", "text/plain");
+      req.onreadystatechange = function(e) {
+        if (e.target.readyState == 4 && e.target.status == 200) {
+          setTimeout(getTasks, 10);
         }
-      });
+      }
+      req.send();
     }
   });
 }
