@@ -24,7 +24,7 @@ var nano = require('nano')('http://127.0.0.1:5984');
 
 var questiondb = nano.db.use('questions_db'); // Reference to the database storing the tasks
 
-// List all the task information as JSON 
+// List all the task information as JSON
 function listQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     console.log(questions);
@@ -48,7 +48,7 @@ function deleteQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     delete questions["questions_list"][req.params.id];
 
-    // Note that 'questions' already contains the _rev field we need to 
+    // Note that 'questions' already contains the _rev field we need to
     // update the data
 
     questiondb.insert(questions, 'questions_info', function (err, t) {
@@ -62,7 +62,7 @@ function deleteQuestions(req, res) {
  */
 function updateQuestionsDB(entryID, questions) {
   questiondb.insert(entryID, 'entryID', function(err_e, e) {
-    questiondb.insert(questions, 'questions_info', function(err_t, t) { 
+    questiondb.insert(questions, 'questions_info', function(err_t, t) {
       console.log("Added task to CouchDB");
       console.log(err_e);
       console.log(err_t);
@@ -70,7 +70,7 @@ function updateQuestionsDB(entryID, questions) {
   });
 }
 
-/* 
+/*
  * Add a new task with the next task id (entryID)
  */
 function addQuestions(req, res) {
@@ -80,9 +80,19 @@ function addQuestions(req, res) {
       // var user = users_info.users_list[1].username
       questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
         if (!err) {
-          questions["questions_list"][next_entry] = {question_title: req.body, question: "Strings", user: "shit", date: Date.now(), category: "category strings", popularity: 1, answers:[]}
-          entryID["next_entry"] = next_entry + 1;
+          var data = JSON.parse(req.body);  // And here we deserialise the string to get the object back.
 
+          questions["questions_list"][next_entry] = {
+            question_title: data.title,
+            question: data.des,
+            user: "shit",
+            date: Date.now(),
+            category: "category strings",
+            popularity: 1,
+            answers:[]
+          };
+
+          entryID["next_entry"] = next_entry + 1;
 
           // Add the new data to CouchDB (separate function since
           // otherwise the callbacks get very deeply nested!)
@@ -101,7 +111,7 @@ var app = express()
 
 app.use(json());
 app.use(express.query());
-app.use(bodyParser.text()); // For parsing POST requests 
+app.use(bodyParser.text()); // For parsing POST requests
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

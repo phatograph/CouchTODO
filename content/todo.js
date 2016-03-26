@@ -35,7 +35,7 @@ function getTasks() {
   req.setRequestHeader("Content-Type", "application/json");
   req.onreadystatechange = function(e) {
     if (e.target.readyState == 4 && e.target.status == 200) {
-      displayTasks(JSON.parse(req.responseText));
+      displayTasks(JSON.parse(req.responseText));  // Posting an object directly does not work, we need to serialise it first by converting it to string.
     }
   }
   req.send(null);
@@ -45,8 +45,6 @@ function getTasks() {
  * Add a new task by making a POST request to the node server
  */
 function setTask(questionInfo) {
-  console.log(questionInfo);
-
   var req = new XMLHttpRequest();
   req.open("POST", "questions_db");
   req.setRequestHeader("Content-Type", "text/plain");
@@ -55,7 +53,7 @@ function setTask(questionInfo) {
       // getTasks();
     }, 10);
   }
-  req.send(questionInfo);
+  req.send(JSON.stringify(questionInfo));
 }
 
 /*
@@ -65,13 +63,14 @@ function setTask(questionInfo) {
 function init() {
   $("#submitButton").click(function() {
     // Get data from the text box
-    var entry = $("#question_title").val();
-    //var entry2 = $("#question_des").val();
-    // Send a post request to add it to the TODO list
+    var entry = {
+      title: $("#question_title").val(),
+      des: $("#question_des").val()
+    };
+
     setTask(entry);
-    //setTask(entry2);
+
     $("#question_title").val("");
-    //$("#question_des").val("");
   });
 
   getTasks();
