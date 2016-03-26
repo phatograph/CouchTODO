@@ -118,7 +118,7 @@ app.set('view engine', 'ejs');
 
 app.get('/questions_db', listQuestions);
 app.get('/questions_db/:id', getQuestions);
-app.get('/delete/:id', deleteQuestions);
+app.post('/questions/:id/delete', deleteQuestions);
 app.post('/questions_db', addQuestions);
 
 app.get('/questions_db/:id', function (req, res) {

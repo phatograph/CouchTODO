@@ -6,8 +6,13 @@ function displayTasks(tasks) {
   $("#tasklist").empty();
 
   for(var i in tasks) {
-    var newli = $("<li id=\"" + i + "\"><a href='/task/" + i + "'>" + i + ": " + tasks[i].question_title + "</a></li>");
-    $("#tasklist").append(newli);
+    var li = "";
+    li += "<li id='" + i + "'>";
+    li += "<a href='/questions/" + i + "'>" + i + ": " + tasks[i].question_title + "</a>";
+    li += " ";
+    li += "<a href='/questions/" + i + "/delete' class='delete'>X</a>";
+    li += "</li>";
+    $("#tasklist").append(li);
   }
 }
 
@@ -34,7 +39,7 @@ function getTasks() {
   req.open("GET", "questions_db");
   req.setRequestHeader("Content-Type", "application/json");
   req.onreadystatechange = function(e) {
-    if (e.target.readyState == 4 && e.target.status == 200) {
+    if (e.target.readyState == 4 && e.target.status == 200) {  // Wait until XHR finishes loading, see http://stackoverflow.com/questions/13763219/javascript-json-parse-responsetext-unexpected-end-of-input
       displayTasks(JSON.parse(req.responseText));
     }
   }
@@ -48,10 +53,10 @@ function setTask(questionInfo) {
   var req = new XMLHttpRequest();
   req.open("POST", "questions_db");
   req.setRequestHeader("Content-Type", "text/plain");
-  req.onreadystatechange = function() {
-    setTimeout(function () {
-      // getTasks();
-    }, 10);
+  req.onreadystatechange = function(e) {
+    if (e.target.readyState == 4 && e.target.status == 201) {
+      setTimeout(getTasks, 10);
+    }
   }
   req.send(JSON.stringify(questionInfo));  // Posting an object directly does not work, we need to serialise it first by converting it to string.
 }
@@ -74,6 +79,24 @@ function init() {
   });
 
   getTasks();
+
+  // Watch for a click event of each delete button.
+  $('#tasklist').on('click', '.delete', function(e) {
+    e.preventDefault();
+
+    if (confirm('Are you sure?')) {
+      $.ajax({
+        url: this.href,
+        type: 'POST',
+        success: function (data, textStatus, jqXHR) {
+          getTasks();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.log('shite');
+        }
+      });
+    }
+  });
 }
 
 $(init);
