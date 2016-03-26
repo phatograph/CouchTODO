@@ -1,72 +1,70 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<title>Query</title>
-<script src="jq.js"></script>
-<script src="todo.js"></script>
-<script>
+  <head>
+    <meta charset="utf-8">
+    <title>Query</title>
+    <script src="jq.js"></script>
+    <script src="todo.js"></script>
+    <script>
 function newQuestion(){
-	var new_question = document.getElementById("new_question")
-	var new_question_button = document.getElementById("new_question_button")
-	new_question.style.display = "inline-block"
-	new_question_button.style.display = "none"
-	}
-	
+  var new_question = document.getElementById("new_question")
+    var new_question_button = document.getElementById("new_question_button")
+    new_question.style.display = "inline-block"
+    new_question_button.style.display = "none"
+}
+
 function submitQuestion(){
-	var new_question = document.getElementById("new_question")
-	var new_question_button = document.getElementById("new_question_button")
-	new_question.style.display = "none"
-	new_question_button.style.display = "inline-block"
-	}
-</script>
-<style>
+  var new_question = document.getElementById("new_question")
+    var new_question_button = document.getElementById("new_question_button")
+    new_question.style.display = "none"
+    new_question_button.style.display = "inline-block"
+}
+    </script>
+    <style>
 #new_question {display: none}
 textarea {resize: none;}
-</style>
-</head>
-<body>
-<header>
-<center><font face="Imprint MT Shadow" size="24">Query</font><br>
-<br/>
-<input type="text" placeholder="Please enter what you are looking for!" size="50" id="searchInput" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
-<button type="button" id="searchButton">Search</button>
-<button id="new_question_button" onclick="newQuestion()">Create New Question </button>
-<hr/>
-<!-- <button id="politicsButton">Politics</button> 
-<button id="technologyButton">Technology</button>
-<button id="sportsButton">Sports</button>
-<button id="cultureButton">Culture</button> -->
-</center>
-</header>
-<br>
-<center>
-<div id="new_question">
-<label>Question Title</label>
-<input id="question_title" type="text" size="50"></input>
-<br/>
-<br/>
-<textarea id="question_des" cols="70" rows="5"></textarea>
-<br>
-<button id="submitButton" onclick="submitQuestion()">Submit</button>
-</center>
-</div>
-<div id="header"></div>
-<br/>
-<center>
-<div id="content">
-    <div id="politics"></div>
-    <div id="technology"></div>
-    <div id="sports"></div>
-    <div id="culture"></div>
-	<div id="search"></div>
-</div><br/>
-<table id="pageButtons" align="center" style="display: none;">
-<tr>
-<td><button id="previousPageButton" onclick="previousPage()">Previous</button></td>
-<td></td>
-<td><button id="nextPageButton"  onclick="nextPage()">Next</button></td>
-</table>
-</center>
-</body>
+    </style>
+  </head>
+  <body>
+    <header>
+      <center><font face="Imprint MT Shadow" size="24">Query</font><br>
+        <br/>
+        <input type="text" placeholder="Please enter what you are looking for!" size="50" id="searchInput" onkeydown="if (event.keyCode == 13) document.getElementById('searchButton').click()"/>
+        <button type="button" id="searchButton">Search</button>
+        <button id="new_question_button" onclick="newQuestion()">Create New Question </button>
+        <hr/>
+        <!-- <button id="politicsButton">Politics</button>
+          <button id="technologyButton">Technology</button>
+          <button id="sportsButton">Sports</button>
+          <button id="cultureButton">Culture</button> -->
+      </center>
+    </header>
+    <br>
+    <div id="new_question">
+      <label>Question Title</label>
+      <input id="question_title" type="text" size="50"></input>
+      <br/>
+      <br/>
+      <textarea id="question_des" cols="70" rows="5"></textarea>
+      <br>
+      <button id="submitButton" onclick="submitQuestion()">Submit</button>
+    </div>
+    <div id="header"></div>
+    <br/>
+    <div id="content">
+      <div id="politics"></div>
+      <div id="technology"></div>
+      <div id="sports"></div>
+      <div id="culture"></div>
+      <div id="search"></div>
+    </div><br/>
+    <table id="pageButtons" align="center" style="display: none;">
+      <tr>
+        <td><button id="previousPageButton" onclick="previousPage()">Previous</button></td>
+        <td></td>
+        <td><button id="nextPageButton"  onclick="nextPage()">Next</button></td>
+    </table>
+    <ul id="tasklist">
+    </ul>
+  </body>
 </html>
