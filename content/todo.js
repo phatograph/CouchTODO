@@ -27,7 +27,7 @@ function displayQuestion(question) {
   answersEl += '<ul>';
 
   $.each(question.question.answers, function(i, answer) {
-    answersEl += '<li>' + answer.content + ' (' + answer.user + ')</li>';
+    answersEl += '<li rel="' + answer.id + '">' + answer.content + ' (' + answer.user + ')</li>';
   });
 
   answersEl += '</ul>';

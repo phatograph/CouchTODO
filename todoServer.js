@@ -113,22 +113,32 @@ function addQuestions(req, res) {
  * Add a new question with the next question id (entryID)
  */
 function addAnswers(req, res) {
-  questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
-    var data = JSON.parse(req.body);
-    var question = questions["questions_list"][req.params.id];
+  questiondb.get('answerID', { revs_info : true }, function (err, answerID) {
+    var next_answer_entry = answerID["next_answer_entry"];
 
-    question.answers.push({
-      content: data.content,
-      user: 'current user'
+    questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
+      var data = JSON.parse(req.body);
+      var question = questions["questions_list"][req.params.id];
+
+      question.answers.push({
+        id: next_answer_entry,
+        content: data.content,
+        user: 'current user'
+      });
+
+      answerID["next_answer_entry"] = next_answer_entry + 1;
+
+      questiondb.insert(answerID, 'answerID', function(err_e, e) {
+        questiondb.insert(questions, 'questions_info', function(err_t, t) {
+          console.log("Added answer to CouchDB");
+          console.log(err_e);
+          console.log(err_t);
+
+          res.writeHead(201);
+          res.end();
+        });
+      });
     });
-
-    questiondb.insert(questions, 'questions_info', function(err_t, t) {
-      console.log("Added question to CouchDB");
-      console.log(err_t);
-    });
-
-    res.writeHead(201);
-    res.end();
   });
 }
 

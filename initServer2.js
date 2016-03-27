@@ -16,6 +16,7 @@ var nano = require('nano')('http://127.0.0.1:5984');
 
 // our application's model, populated with one entry
 var entryID = { "next_entry" : 3 };
+var answerID = { "next_answer_entry" : 0 };
 var user_info = { "users_list" :{"1": {"username":"test", "password": "test", "account_type": "moderator"}} };
 var question_info = {"questions_list" :
   {
@@ -49,6 +50,16 @@ nano.db.create('questions_db', function (err, body) {
         console.log(body);
       } else {
         console.log("Error when initialising entry ID");
+        console.log(err);
+      }
+    })
+
+    questions_db.insert(answerID, 'answerID', function(err, body) {
+      if (!err) {
+        console.log("Initialised Answer ID:");
+        console.log(body);
+      } else {
+        console.log("Error when initialising answer ID");
         console.log(err);
       }
     })
