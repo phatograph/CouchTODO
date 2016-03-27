@@ -19,8 +19,10 @@ function displayQuestions(questions) {
     });
     li += ' (' + score + ' votes)';
 
-    li += " <a class='voteUp'>Up</a>";
-    li += " <a class='voteDown'>Down</a>";
+    if (questions[i].canVoteUp) li += " <a class='voteUp'>Up</a>";
+    else li += " <a class='voteNull'>Remove</a>";
+    if (questions[i].canVoteDown) li += " <a class='voteDown'>Down</a>";
+    else li += " <a class='voteNull'>Remove</a>";
 
     li += "</li>";
   }
@@ -127,11 +129,26 @@ function addAnswer(id, answer) {
 }
 
 /*
- * Add a new answer by making a POST request to the node server
+ * Add a new vote by making a POST request to the node server
  */
 function addVote(id, score) {
   var req = new XMLHttpRequest();
   req.open('POST', 'questions/' + id + '/votes');
+  req.setRequestHeader("Content-Type", "text/plain");
+  req.onreadystatechange = function(e) {
+    if (e.target.readyState == 4 && e.target.status == 201) {
+      setTimeout(getQuestions, 10);
+    }
+  }
+  req.send(JSON.stringify(score));
+}
+
+/*
+ * Delete a vote
+ */
+function deleteVote(id, score) {
+  var req = new XMLHttpRequest();
+  req.open('POST', 'questions/' + id + '/votes/delete');
   req.setRequestHeader("Content-Type", "text/plain");
   req.onreadystatechange = function(e) {
     if (e.target.readyState == 4 && e.target.status == 201) {
@@ -181,6 +198,10 @@ function init() {
       addVote($(this).parent().attr('id'), {
         content: -1
       });
+    })
+    .on('click', '.voteNull', function(e) {
+      e.preventDefault();
+      deleteVote($(this).parent().attr('id'));
     });
 
   $('#question')

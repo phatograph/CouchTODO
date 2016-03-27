@@ -4,11 +4,11 @@
  *
  **/
 
-var http = require('http');
-var express = require('express');
-var json = require('express-json');
+var http       = require('http');
+var express    = require('express');
+var json       = require('express-json');
 var bodyParser = require('body-parser');
-var path = require('path');
+var path       = require('path');
 
 // TODO: Replace 'username' and 'password' with the username and password
 // given by couchdb-setup
@@ -20,14 +20,27 @@ var path = require('path');
 // var nano = require('nano')('http://cp217:M9FMMqFz@lyrane.cs.st-andrews.ac.uk:20141');
 
 // var nano = require('nano')('http://cp217:TheOat-21186@localhost:5984');
-var nano = require('nano')('http://127.0.0.1:5984');
-
+var nano       = require('nano')('http://127.0.0.1:5984');
 var questiondb = nano.db.use('questions_db'); // Reference to the database storing the questions
 
+// TODO: Implement this from session.
+var currentUser = 0;
+
 // List all the question information as JSON
-function listQuestions(req, res) {
+function getQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
-    console.log(questions);
+    for (var i in questions["questions_list"]) {
+      var q = questions["questions_list"][i];
+
+      q.canVoteUp = q.votes.find(function(x) {
+        return x.user == currentUser && x.content == 1;
+      }) == undefined;
+
+      q.canVoteDown = q.votes.find(function(x) {
+        return x.user == currentUser && x.content == -1;
+      }) == undefined;
+    }
+
     res.json(questions["questions_list"]);
   });
 }
@@ -123,7 +136,7 @@ function addAnswers(req, res) {
       question.answers.push({
         id: next_answer_entry,
         content: data.content,
-        user: 'current user'
+        user: currentUser
       });
 
       answerID["next_answer_entry"] = next_answer_entry + 1;
@@ -143,17 +156,45 @@ function addAnswers(req, res) {
 }
 
 /*
- * Add a new question with the next question id (entryID)
+ * Add a new vote
  */
 function addVotes(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     var data = JSON.parse(req.body);
     var question = questions["questions_list"][req.params.id];
+    var vote = question.votes.find(function(x) {
+      return x.user == currentUser;
+    })
 
-    question.votes.push({
-      content: data.content,
-      user: 'current user'
+    if (vote) {
+      vote.content = data.content;
+    }
+    else {
+      question.votes.push({
+        content: data.content,
+        user: currentUser
+      });
+    }
+
+    questiondb.insert(questions, 'questions_info', function(err_t, t) {
+      console.log("Added answer to CouchDB");
+      console.log(err_t);
+
+      res.writeHead(201);
+      res.end();
     });
+  });
+}
+
+/*
+ * Deleete a vote
+ */
+function deleteVotes(req, res) {
+  questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
+    var question = questions["questions_list"][req.params.id];
+    question.votes = question.votes.filter(function(x) {
+      return x.user != currentUser;
+    })
 
     questiondb.insert(questions, 'questions_info', function(err_t, t) {
       console.log("Added answer to CouchDB");
@@ -175,12 +216,13 @@ app.use(bodyParser.text()); // For parsing POST requests
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/questions', listQuestions);
+app.get('/questions', getQuestions);
 app.get('/questions/:id', getQuestion);
 app.post('/questions/:id/delete', deleteQuestions);
 app.post('/questions', addQuestions);
 app.post('/questions/:id/answers', addAnswers);
 app.post('/questions/:id/votes', addVotes);
+app.post('/questions/:id/votes/delete', deleteVotes);
 
 app.get('/questions_db/:id', function (req, res) {
   res.render('index', { id: req.params.id });
