@@ -64,7 +64,17 @@ textarea {resize: none;}
         <td></td>
         <td><button id="nextPageButton"  onclick="nextPage()">Next</button></td>
     </table>
-    <ul id="tasklist">
-    </ul>
+    <ul id="questionlist"></ul>
+    <div id="question" style="display: none;">
+      <a class="back" href>Back</a>
+      <div class="content"></div>
+      <div class="answers"></div>
+      <div class="new-answer">
+        <form id="newAnswer">
+          <input type="text" id="answerContent" value="" />
+          <input type="submit" />
+        </form>
+      </div>
+    </div>
   </body>
 </html>

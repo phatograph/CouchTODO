@@ -35,9 +35,12 @@ function listQuestions(req, res) {
 /*
  * Get the question with the given id req.id.
  */
-function getQuestions(req, res) {
+function getQuestion(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
-    res.json(questions["questions_list"][req.params.id]);
+    res.json({
+      id: req.params.id,  // We also need to return an id for referencing back which question we are displaying. for example `setAnswer()`.
+      question: questions["questions_list"][req.params.id]
+    });
   });
 }
 
@@ -106,6 +109,29 @@ function addQuestions(req, res) {
   });
 }
 
+/*
+ * Add a new question with the next question id (entryID)
+ */
+function addAnswers(req, res) {
+  questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
+    var data = JSON.parse(req.body);
+    var question = questions["questions_list"][req.params.id];
+
+    question.answers.push({
+      content: data.content,
+      user: 'current user'
+    });
+
+    questiondb.insert(questions, 'questions_info', function(err_t, t) {
+      console.log("Added question to CouchDB");
+      console.log(err_t);
+    });
+
+    res.writeHead(201);
+    res.end();
+  });
+}
+
 // main()
 var app = express()
 
@@ -116,10 +142,11 @@ app.use(bodyParser.text()); // For parsing POST requests
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/questions_db', listQuestions);
-app.get('/questions_db/:id', getQuestions);
+app.get('/questions', listQuestions);
+app.get('/questions/:id', getQuestion);
 app.post('/questions/:id/delete', deleteQuestions);
-app.post('/questions_db', addQuestions);
+app.post('/questions', addQuestions);
+app.post('/questions/:id/answers', addAnswers);
 
 app.get('/questions_db/:id', function (req, res) {
   res.render('index', { id: req.params.id });
