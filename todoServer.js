@@ -22,9 +22,9 @@ var path = require('path');
 // var nano = require('nano')('http://cp217:TheOat-21186@localhost:5984');
 var nano = require('nano')('http://127.0.0.1:5984');
 
-var questiondb = nano.db.use('questions_db'); // Reference to the database storing the tasks
+var questiondb = nano.db.use('questions_db'); // Reference to the database storing the questions
 
-// List all the task information as JSON
+// List all the question information as JSON
 function listQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     console.log(questions);
@@ -33,7 +33,7 @@ function listQuestions(req, res) {
 }
 
 /*
- * Get the task with the given id req.id.
+ * Get the question with the given id req.id.
  */
 function getQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
@@ -42,7 +42,7 @@ function getQuestions(req, res) {
 }
 
 /*
- * Delete the task with the given id req.id.
+ * Delete the question with the given id req.id.
  */
 function deleteQuestions(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
@@ -58,12 +58,12 @@ function deleteQuestions(req, res) {
 }
 
 /*
- * Add updated task information to CouchDB
+ * Add updated question information to CouchDB
  */
 function updateQuestionsDB(entryID, questions) {
   questiondb.insert(entryID, 'entryID', function(err_e, e) {
     questiondb.insert(questions, 'questions_info', function(err_t, t) {
-      console.log("Added task to CouchDB");
+      console.log("Added question to CouchDB");
       console.log(err_e);
       console.log(err_t);
     });
@@ -71,7 +71,7 @@ function updateQuestionsDB(entryID, questions) {
 }
 
 /*
- * Add a new task with the next task id (entryID)
+ * Add a new question with the next question id (entryID)
  */
 function addQuestions(req, res) {
   questiondb.get('entryID', { revs_info : true }, function (err, entryID) {

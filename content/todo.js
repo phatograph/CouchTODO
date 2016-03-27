@@ -1,61 +1,61 @@
 /*
- * Display tasks in the 'tasklist'
- * For each task, add a handler which will delete the task when it is clicked
+ * Display questions in the 'questionlist'
+ * For each question, add a handler which will delete the question when it is clicked
  */
-function displayTasks(tasks) {
-  $("#tasklist").empty();
+function displayQuestions(questions) {
+  $("#questionlist").empty();
 
-  for(var i in tasks) {
+  for(var i in questions) {
     var li = "";
     li += "<li id='" + i + "'>";
-    li += "<a href='/questions/" + i + "'>" + i + ": " + tasks[i].question_title + "</a>";
+    li += "<a href='/questions/" + i + "'>" + i + ": " + questions[i].question_title + "</a>";
     li += " ";
     li += "<a href='/questions/" + i + "/delete' class='delete'>X</a>";
     li += "</li>";
-    $("#tasklist").append(li);
+    $("#questionlist").append(li);
   }
 }
 
 /*
- * Delete a task by making an AJAX request
- * Once complete, display the task list
+ * Delete a question by making an AJAX request
+ * Once complete, display the question list
  */
-function deleteTask(taskid) {
+function deleteQuestion(questionid) {
   var req = new XMLHttpRequest();
-  req.open("GET", "delete/"+taskid);
+  req.open("GET", "delete/"+questionid);
 
   req.setRequestHeader("Content-Type", "text/plain");
   req.onreadystatechange = function() {
-    displayTasks(JSON.parse(req.responseText));
+    displayQuestions(JSON.parse(req.responseText));
   }
   req.send(null);
 }
 
 /*
- * Retrieve the task list by making an AJAX request
+ * Retrieve the question list by making an AJAX request
  */
-function getTasks() {
+function getQuestions() {
   var req = new XMLHttpRequest();
   req.open("GET", "questions_db");
   req.setRequestHeader("Content-Type", "application/json");
   req.onreadystatechange = function(e) {
     if (e.target.readyState == 4 && e.target.status == 200) {  // Wait until XHR finishes loading, see http://stackoverflow.com/questions/13763219/javascript-json-parse-responsetext-unexpected-end-of-input
-      displayTasks(JSON.parse(req.responseText));
+      displayQuestions(JSON.parse(req.responseText));
     }
   }
   req.send(null);
 }
 
 /*
- * Add a new task by making a POST request to the node server
+ * Add a new question by making a POST request to the node server
  */
-function setTask(questionInfo) {
+function setQuestion(questionInfo) {
   var req = new XMLHttpRequest();
   req.open("POST", "questions_db");
   req.setRequestHeader("Content-Type", "text/plain");
   req.onreadystatechange = function(e) {
-    if (e.target.readyState == 4 && e.target.status == 201) {
-      setTimeout(getTasks, 10);
+    if (e.target.readyState == 4 && e.target.status == 201) {  // Watch out for the usage of `201` status here, normal success status is `200`, `201` means 'created' which is correct in this context.
+      setTimeout(getQuestions, 10);
     }
   }
   req.send(JSON.stringify(questionInfo));  // Posting an object directly does not work, we need to serialise it first by converting it to string.
@@ -63,7 +63,7 @@ function setTask(questionInfo) {
 
 /*
  * Set up the text entry field so that when changed, it posts the content to
- * the server as a task
+ * the server as a question
  */
 function init() {
   $("#submitButton").click(function() {
@@ -73,24 +73,24 @@ function init() {
       des: $("#question_des").val()
     };
 
-    setTask(entry);
+    setQuestion(entry);
 
     $("#question_title").val("");
   });
 
-  getTasks();
+  getQuestions();
 
   // Watch for a click event of each delete button.
-  $('#tasklist').on('click', '.delete', function(e) {
+  $('#questionlist').on('click', '.delete', function(e) {
     e.preventDefault();
 
     if (confirm('Are you sure?')) {
       var req = new XMLHttpRequest();
-      req.open("POST", this.href);  // Use `href` attribute from each question that we created in `displayTasks` function.
+      req.open("POST", this.href);  // Use `href` attribute from each question that we created in `displayQuestions` function.
       req.setRequestHeader("Content-Type", "text/plain");
       req.onreadystatechange = function(e) {
         if (e.target.readyState == 4 && e.target.status == 200) {
-          setTimeout(getTasks, 10);
+          setTimeout(getQuestions, 10);
         }
       }
       req.send();

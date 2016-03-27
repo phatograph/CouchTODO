@@ -1,6 +1,6 @@
 /// Run this first, to initialise the data in CouchDB
 
-// WARNING: It will delete any existing database called 'tasks'!
+// WARNING: It will delete any existing database called 'questions'!
 
 // TODO: Replace 'username' and 'password' with the username and password
 // given by couchdb-setup
