@@ -3,17 +3,29 @@
  * For each question, add a handler which will delete the question when it is clicked
  */
 function displayQuestions(questions) {
+  var li = "";
+  var score = 0;
+
   $("#questionlist").empty();
 
-  for(var i in questions) {
-    var li = "";
+  for (var i in questions) {
     li += "<li id='" + i + "'>";
     li += "<a href='/questions/" + i + "' class='link'>"+ i + ": " + questions[i].question_title + "</a>";
-    li += " ";
-    li += "<a class='delete'>X</a>";
+    li += " <a class='delete'>X</a>";
+
+    score = 0;
+    $.each(questions[i].votes, function(i, vote) {
+      score += vote.content;
+    });
+    li += ' (' + score + ' votes)';
+
+    li += " <a class='voteUp'>Up</a>";
+    li += " <a class='voteDown'>Down</a>";
+
     li += "</li>";
-    $("#questionlist").append(li);
   }
+
+  $("#questionlist").append(li);
 }
 
 function displayQuestion(question) {
@@ -86,7 +98,7 @@ function getQuestions() {
 /*
  * Add a new question by making a POST request to the node server
  */
-function setQuestion(questionInfo) {
+function addQuestion(questionInfo) {
   var req = new XMLHttpRequest();
   req.open("POST", "questions");
   req.setRequestHeader("Content-Type", "text/plain");
@@ -101,24 +113,32 @@ function setQuestion(questionInfo) {
 /*
  * Add a new answer by making a POST request to the node server
  */
-function setAnswer() {
-  var $question = $('#question');
-  var qId = $question.attr('rel');
-  var answer = {
-    content: $('#answerContent').val()
-  };
-
-  $('#answerContent').val('');  // Reset the input
-
+function addAnswer(id, answer) {
   var req = new XMLHttpRequest();
-  req.open('POST', 'questions/' + qId + '/answers');
+  req.open('POST', 'questions/' + id + '/answers');
   req.setRequestHeader("Content-Type", "text/plain");
   req.onreadystatechange = function(e) {
     if (e.target.readyState == 4 && e.target.status == 201) {
-      getQuestion(qId);
+      $('#answerContent').val('');  // Reset the input
+      getQuestion(id);
     }
   }
   req.send(JSON.stringify(answer));
+}
+
+/*
+ * Add a new answer by making a POST request to the node server
+ */
+function addVote(id, score) {
+  var req = new XMLHttpRequest();
+  req.open('POST', 'questions/' + id + '/votes');
+  req.setRequestHeader("Content-Type", "text/plain");
+  req.onreadystatechange = function(e) {
+    if (e.target.readyState == 4 && e.target.status == 201) {
+      setTimeout(getQuestions, 10);
+    }
+  }
+  req.send(JSON.stringify(score));
 }
 
 /*
@@ -133,7 +153,7 @@ function init() {
       des: $("#question_des").val()
     };
 
-    setQuestion(entry);
+    addQuestion(entry);
 
     $("#question_title").val("");
   });
@@ -149,6 +169,18 @@ function init() {
     .on('click', '.link', function(e) {
       e.preventDefault();
       getQuestion($(this).parent().attr('id'));
+    })
+    .on('click', '.voteUp', function(e) {
+      e.preventDefault();
+      addVote($(this).parent().attr('id'), {
+        content: 1
+      });
+    })
+    .on('click', '.voteDown', function(e) {
+      e.preventDefault();
+      addVote($(this).parent().attr('id'), {
+        content: -1
+      });
     });
 
   $('#question')
@@ -159,7 +191,10 @@ function init() {
     })
     .on('submit', '#newAnswer', function(e) {
       e.preventDefault();
-      setAnswer();
+
+      addAnswer($('#question').attr('rel'), {
+        content: $('#answerContent').val()
+      });
     });
 }
 

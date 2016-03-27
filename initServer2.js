@@ -20,8 +20,8 @@ var answerID = { "next_answer_entry" : 0 };
 var user_info = { "users_list" :{"1": {"username":"test", "password": "test", "account_type": "moderator"}} };
 var question_info = {"questions_list" :
   {
-    "1": {"question_title": "Question 1", "question": "question description strings", "user": user_info.users_list[1].username , "date": Date.now(), "category": "category strings", "popularity": 1, "answers":[]},
-    "2": {"question_title": "Question 2", "question": "question description strings", "user": user_info.users_list[1].username , "date": Date.now(), "category": "category strings", "popularity": 1, "answers":[]}
+    "1": {"question_title": "Question 1", "question": "question description strings", "user": user_info.users_list[1].username , "date": Date.now(), "category": "category strings", "votes": [], "answers":[]},
+    "2": {"question_title": "Question 2", "question": "question description strings", "user": user_info.users_list[1].username , "date": Date.now(), "category": "category strings", "votes": [], "answers":[]}
   }
 };
 

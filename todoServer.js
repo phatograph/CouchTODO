@@ -91,8 +91,8 @@ function addQuestions(req, res) {
             user: "shit",
             date: Date.now(),
             category: "category strings",
-            popularity: 1,
-            answers:[]
+            votes: [],
+            answers: []
           };
 
           entryID["next_entry"] = next_entry + 1;
@@ -142,6 +142,29 @@ function addAnswers(req, res) {
   });
 }
 
+/*
+ * Add a new question with the next question id (entryID)
+ */
+function addVotes(req, res) {
+  questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
+    var data = JSON.parse(req.body);
+    var question = questions["questions_list"][req.params.id];
+
+    question.votes.push({
+      content: data.content,
+      user: 'current user'
+    });
+
+    questiondb.insert(questions, 'questions_info', function(err_t, t) {
+      console.log("Added answer to CouchDB");
+      console.log(err_t);
+
+      res.writeHead(201);
+      res.end();
+    });
+  });
+}
+
 // main()
 var app = express()
 
@@ -157,6 +180,7 @@ app.get('/questions/:id', getQuestion);
 app.post('/questions/:id/delete', deleteQuestions);
 app.post('/questions', addQuestions);
 app.post('/questions/:id/answers', addAnswers);
+app.post('/questions/:id/votes', addVotes);
 
 app.get('/questions_db/:id', function (req, res) {
   res.render('index', { id: req.params.id });
