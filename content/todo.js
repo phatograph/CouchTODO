@@ -13,6 +13,7 @@ function displayQuestions(questions) {
     li += "<a href='/questions/" + i + "' class='link'>"+ i + ": " + questions[i].question_title + "</a>";
     li += " <a class='delete'>X</a>";
 
+    // TODO: look up a better sum method in jQuery.
     score = 0;
     $.each(questions[i].votes, function(i, vote) {
       score += vote.content;

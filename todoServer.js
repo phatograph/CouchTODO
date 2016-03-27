@@ -162,14 +162,16 @@ function addVotes(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     var data = JSON.parse(req.body);
     var question = questions["questions_list"][req.params.id];
+
+    // First, try to find an existing vote.
     var vote = question.votes.find(function(x) {
       return x.user == currentUser;
     })
 
-    if (vote) {
+    if (vote) {  // If there is, update its value
       vote.content = data.content;
     }
-    else {
+    else {  // If there is none, create a new one
       question.votes.push({
         content: data.content,
         user: currentUser
@@ -192,6 +194,8 @@ function addVotes(req, res) {
 function deleteVotes(req, res) {
   questiondb.get('questions_info', { revs_info : true }, function (err, questions) {
     var question = questions["questions_list"][req.params.id];
+
+    // Simply remove a vote of current user by filtering it out and replace the old votes.
     question.votes = question.votes.filter(function(x) {
       return x.user != currentUser;
     })
@@ -218,6 +222,7 @@ app.set('view engine', 'ejs');
 
 app.get('/questions', getQuestions);
 app.get('/questions/:id', getQuestion);
+
 app.post('/questions/:id/delete', deleteQuestions);
 app.post('/questions', addQuestions);
 app.post('/questions/:id/answers', addAnswers);

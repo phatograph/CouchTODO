@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Query</title>
+    <script src="jq.js"></script>
+    <script src="todo.js"></script>
+    <script>
+function newQuestion(){
+  var new_question = document.getElementById("new_question")
+    var new_question_button = document.getElementById("new_question_button")
+    var content = document.getElementById("content")
+    new_question.style.display = "inline-block"
+    new_question_button.style.visibility = "hidden"
+    content.style.display = "none"
+}
+
+function submitQuestion(){
+  var new_question = document.getElementById("new_question")
+    var new_question_button = document.getElementById("new_question_button")
+    var content = document.getElementById("content")
+    new_question.style.display = "none"
+    new_question_button.style.visibility = "visible"
+    content.style.display = "inline-block"
+}
+    </script>
+    <style type="text/css">
+html{height: 100%;}
+body{margin: 0; padding: 0; height: 100%;}
+.wrapper{text-align:center; margin: auto; border-left: 1px solid #aaa; border-right: 1px solid #aaa; background-color:#89f0aa; min-height:100%;}
+.header{height:12%; background-color:#89cff0; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1);}
+#new_question_button{height:30%; width:20%; border:0px; background-color:#899cf0;}
+#new_question{margin: auto; height:78%; width:90%; background-color:#FFFFFF; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1); padding: 1em; display: none}
+#content{margin: auto; width:90%; min-height: 78%; background-color:#FFFFFF; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1); padding: 1em; flex-direction: column; }
+#submitButton{height:30pt; width:10%; border:0px; background-color:#899cf0;}
+
+.questionsList{margin: auto; width:90%; background-color:#FFFFFF; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1); 
+  flex-direction: column; margin-top: 8pt; margin-bottom: 8pt; padding: 1em}
+.addAnswer{height:30%; width:10%; border:0px; background-color:#899cf0; float:right;}
+.answer_section{margin: auto; text-align:left; width:90%; background-color:#FFFFFF; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1); 
+  flex-direction: column; margin-top: 8pt; margin-bottom: 8pt;  padding: 1em}
+.answers{text-align:left; margin: auto; min-height:5.5%; width:80%; background-color:#EEFFFF; box-shadow: 0px 1px 5px -1px rgba(0,0,0,1); flex-direction: column; 
+  margin-top: 8pt;; padding: 1em}
+
+textarea {resize: none;}
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">  
+      <div class="header">
+        <center><font face="Courier New" size=+25 color=#FFFFFF>Query</font><br>
+          <br/>
+          <button id="new_question_button" onclick="newQuestion()"><font face="Courier New" color=#FFFFFF size=+2>Create New Question</font></button>
+        </center>
+        <br>
+      </div>
+      <br>
+      <div id="new_question">
+        <center>
+          <label><font face="Courier New" size=+2>Question</font></label>
+          <br/>
+          <br/>
+          <textarea id="question_text" cols="100" rows="15"></textarea>
+          <br>
+          <button id="submitButton" onclick="submitQuestion()"><font face="Courier New" size=+2 color=#FFFFFF>Submit</font></button>
+        </center>
+        <br>
+      </div>
+
+      <div id="content">
+      </div>
+      <br/>
+
+    </div>
+
+  </body>
+</html>
