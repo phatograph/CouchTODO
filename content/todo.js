@@ -8,7 +8,14 @@ function displayQuestions(questions) {
 
   $("#questionlist").empty();
 
+  var keys = [];
   for (var i in questions) {
+    keys.push(i);
+  }
+
+  keys.reverse();
+
+  for (var i of keys) {
     li += "<li id='" + i + "'>";
     li += "<a href='/questions/" + i + "' class='link'>"+ i + ": " + questions[i].question_title + "</a>";
     li += " <a class='delete'>X</a>";
